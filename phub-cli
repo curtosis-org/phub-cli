@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+	
+#script dir
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Source modules
+source "$DIR/modules/categories.sh"
+source "$DIR/modules/player.sh"
+source "$DIR/modules/ui.sh"
+
+# Dependency check points
+command -v fzf >/dev/null || { echo "fzf not installed"; exit 1; }
+command -v mpv >/dev/null || { echo "mpv not installed"; exit 1; }
+command -v yt-dlp >/dev/null || {
+  echo "yt-dlp not installed"
+  exit 1
+}
+
+
+while true; do
+    clear
+    show_home
+
+    read -r -p "Select option: " choice </dev/tty
+
+    case "$choice" in
+        1)
+            #Browse Categories
+            category=$(get_categories | fzf \
+                --prompt="Category ❯ " \
+                --height=100% \
+                --border \
+                --layout=reverse \
+                --cycle)
+
+            [ -z "$category" ] && continue
+
+            cid=$(echo "$category" | awk -F'|' '{print $1}')
+
+            while true; do
+                video=$(
+                    "$DIR/modules/videos.py" "$cid" | fzf \
+                        --prompt="Video ❯ " \
+                        --height=100% \
+                        --border \
+                        --layout=reverse \
+                        --cycle \
+                        --with-nth=2 \
+                        --preview='echo {} | cut -d"|" -f2' \
+                        --preview-window=down:3:wrap
+                )
+
+                [ -z "$video" ] && break
+
+                viewkey=$(echo "$video" | awk -F'|' '{print $1}')
+
+                if ! play_video "$viewkey"; then
+                    echo
+                    echo "❌ Video unavailable"
+                    echo "Returning to results..."
+                    sleep 1
+                    continue
+                fi
+
+                action=$(post_play_menu)
+                case "$action" in
+                    1) continue ;;   # Replay
+                    2) break ;;      # Back to results
+                    3) break 2 ;;    # Back to home
+                    q|Q) clear; exit 0 ;;
+                esac
+            done
+            ;;
+        2)
+            #Search
+            read -r -p "Search query: " query </dev/tty
+            [ -z "$query" ] && continue
+
+            while true; do
+                video=$(
+                    "$DIR/modules/search.py" "$query" | fzf \
+                        --prompt="Search ❯ " \
+                        --height=100% \
+                        --border \
+                        --layout=reverse \
+                        --cycle \
+                        --with-nth=2 \
+                        --preview='echo {} | cut -d"|" -f2' \
+                        --preview-window=down:3:wrap
+                )
+
+                [ -z "$video" ] && break
+
+                viewkey=$(echo "$video" | awk -F'|' '{print $1}')
+
+                if ! play_video "$viewkey"; then
+                    echo
+                    echo "❌ Video unavailable"
+                    echo "Returning to results..."
+                    sleep 1
+                    continue
+                fi
+
+                action=$(post_play_menu)
+                case "$action" in
+                    1) continue ;;
+                    2) break ;;
+                    3) break 2 ;;
+                    q|Q) clear; exit 0 ;;
+                esac
+            done
+            ;;
+        q|Q)
+            clear
+            exit 0
+            ;;
+        *)
+            continue
+            ;;
+    esac
+done
+
