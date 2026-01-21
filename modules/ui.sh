@@ -13,7 +13,7 @@ cat << "EOF"
               terminal video browser
           lust-driven streaming experience
 
-                   version v0.1.1
+                   version v0.2.0
 
  ──────────────────────────────────────────────
     [1]  Browse categories
