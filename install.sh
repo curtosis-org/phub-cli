@@ -32,6 +32,16 @@ then
   exit 1
 fi
 
+if ! python3 - <<EOF >/dev/null 2>&1
+import requests
+EOF
+then
+  echo "❌ Missing python dependency: requests"
+  echo "   Arch: sudo pacman -S python-requests"
+  echo "   Debian/Ubuntu: sudo apt install python3-requests"
+  exit 1
+fi
+
 # --- Install files ---
 echo "▶ Creating directories"
 mkdir -p "$BIN"
