@@ -19,6 +19,10 @@ command -v fzf >/dev/null || { echo "fzf not installed"; exit 1; }
 command -v mpv >/dev/null || { echo "mpv not installed"; exit 1; }
 command -v yt-dlp >/dev/null || { echo "yt-dlp not installed"; exit 1; }
 
+# Check for updates on startup
+check_for_updates
+echo ""
+
 while true; do
     clear
     show_home
