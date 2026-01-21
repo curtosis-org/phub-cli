@@ -1,46 +1,7 @@
 #!/usr/bin/env bash
 
-get_version() {
-    if [ -d ".git" ]; then
-        # Get current version from git describe
-        CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "unknown")
-        
-        # Get latest version from remote tags
-        LATEST_VERSION=$(git tag --sort=-v:refname | head -n 1 2>/dev/null || echo "unknown")
-        
-        echo "$CURRENT_VERSION"
-    else
-        echo "check https://github.com/curtosis-org/phub-cli for latest release"  # Fallback for non-git installs
-    fi
-}
-
-check_for_updates() {
-    if [ -d ".git" ]; then
-        
-        # Fetch latest tags
-        git fetch --tags >/dev/null 2>&1
-        
-        CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "unknown")
-        LATEST_VERSION=$(git tag --sort=-v:refname | head -n 1 2>/dev/null || echo "unknown")
-        
-        if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ] && [ "$CURRENT_VERSION" != "unknown" ] && [ "$LATEST_VERSION" != "unknown" ]; then
-            echo "📦 Update available: $LATEST_VERSION (you have: $CURRENT_VERSION)"
-            echo "🔄 Auto-updating..."
-            git pull >/dev/null 2>&1
-            echo "✅ Updated successfully!"
-            echo ""
-            echo "🔄 Restarting phub-cli..."
-            sleep 2
-            exec "$0" "$@"
-        else
-            echo ""
-        fi
-    fi
-}
-
 show_home() {
-    VERSION=$(get_version)
-cat << EOF
+cat << "EOF"
 
    ██████╗ ██╗  ██╗██╗   ██╗██████╗        ██████╗ ██╗     ██╗
    ██╔══██╗██║  ██║██║   ██║██╔══██╗      ██╔════╝ ██║     ██║
@@ -52,7 +13,7 @@ cat << EOF
               terminal video browser
           lust-driven streaming experience
 
-                   version $VERSION
+                   version v0.2.0
 
  ──────────────────────────────────────────────
     [1]  Browse categories
