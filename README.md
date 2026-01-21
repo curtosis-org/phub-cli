@@ -81,6 +81,10 @@ phub-cli
 phub-cli relies on external tools and system Python packages.
 You must install these before running the installer.
 
+```bash
+pip install -r requirements.txt
+```
+
 # Required
 
 - bash
@@ -91,9 +95,13 @@ You must install these before running the installer.
 
 - yt-dlp
 
+- jq
+  
 - python3
 
 - python3-bs4 (BeautifulSoup)
+
+- python3 requests
 
 ### Arch Linux
 
