@@ -120,6 +120,41 @@ while true; do
                         break
                         ;;
                     2)
+                        # Watch video (ASCII mode)
+                        while true; do
+                            if ! play_video_ascii "$viewkey"; then
+                                echo "❌ ASCII playback failed"
+                                sleep 1
+                                break
+                            fi
+
+                            clear
+                            action=$(post_play_menu)
+
+                            case "$action" in
+                                1)
+                                    continue
+                                    ;;
+                                2)
+                                    break
+                                    ;;
+                                3)
+                                    nav="home"
+                                    break
+                                    ;;
+                                q|Q)
+                                    clear
+                                    exit 0
+                                    ;;
+                                *)
+                                    continue
+                                    ;;
+                            esac
+                        done
+                        [ "$nav" = "home" ] && break
+                        break
+                        ;;
+                    3)
                         # Download video
                         while true; do
                             clear
@@ -165,7 +200,7 @@ while true; do
                         [ "$nav" = "home" ] && break
                         break
                         ;;
-                    3)
+                    4)
                         # Open in browser
                         open_in_browser "$viewkey"
                         continue
@@ -269,6 +304,41 @@ while true; do
                         break
                         ;;
                     2)
+                        # Watch video (ASCII mode)
+                        while true; do
+                            if ! play_video_ascii "$viewkey"; then
+                                echo "❌ ASCII playback failed"
+                                sleep 1
+                                break
+                            fi
+
+                            clear
+                            action=$(post_play_menu)
+
+                            case "$action" in
+                                1)
+                                    continue
+                                    ;;
+                                2)
+                                    break
+                                    ;;
+                                3)
+                                    nav="home"
+                                    break
+                                    ;;
+                                q|Q)
+                                    clear
+                                    exit 0
+                                    ;;
+                                *)
+                                    continue
+                                    ;;
+                            esac
+                        done
+                        [ "$nav" = "home" ] && break
+                        break
+                        ;;
+                    3)
                         # Download video
                         while true; do
                             clear
@@ -314,7 +384,7 @@ while true; do
                         [ "$nav" = "home" ] && break
                         break
                         ;;
-                    3)
+                    4)
                         # Open in browser
                         open_in_browser "$viewkey"
                         continue

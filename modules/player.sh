@@ -102,6 +102,156 @@ play_video() {
     return 0
 }
 
+check_ascii_deps() {
+    local missing_deps=()
+    
+    command -v ffmpeg >/dev/null || missing_deps+=("ffmpeg")
+    command -v chafa >/dev/null || missing_deps+=("chafa")
+    
+    if [ ${#missing_deps[@]} -gt 0 ]; then
+        echo "" > /dev/tty
+        echo "  ⚠️  ASCII mode requires additional dependencies:" > /dev/tty
+        for dep in "${missing_deps[@]}"; do
+            echo "     • $dep" > /dev/tty
+        done
+        echo "" > /dev/tty
+        echo "  Install with:" > /dev/tty
+        echo "    Arch: sudo pacman -S ffmpeg chafa" > /dev/tty
+        echo "    Debian/Ubuntu: sudo apt install ffmpeg chafa" > /dev/tty
+        echo "    macOS: brew install ffmpeg chafa" > /dev/tty
+        echo "" > /dev/tty
+        sleep 3
+        return 1
+    fi
+    
+    return 0
+}
+
+play_video_ascii() {
+    viewkey="$1"
+    page_url="https://www.pornhub.com/view_video.php?viewkey=$viewkey"
+    
+    # Check dependencies first
+    check_ascii_deps || return 1
+    
+    start_time=$(date +%s)
+    
+    # Pre-play messages
+    clear
+    
+    messages=(
+        "🎨 Converting pixels to ASCII art..."
+        "🖥️  Preparing terminal canvas..."
+        "📼 Rewinding to the retro era..."
+        "⌨️  Translating to text mode..."
+        "🎭 Rendering your theatrical experience..."
+        "💾 Loading cassette tape buffers..."
+    )
+    pick1=${messages[RANDOM % ${#messages[@]}]}
+    pick2=${messages[RANDOM % ${#messages[@]}]}
+    
+    echo "" > /dev/tty
+    echo "  $pick1" > /dev/tty
+    sleep 0.3
+    echo "  $pick2" > /dev/tty
+    echo "" > /dev/tty
+    
+    # Variable to track audio PID
+    audio_pid=""
+    
+    # Set up cleanup trap for Ctrl+C and errors
+    cleanup_ascii() {
+        # Kill audio if running
+        if [ -n "$audio_pid" ] && kill -0 "$audio_pid" 2>/dev/null; then
+            kill "$audio_pid" 2>/dev/null
+            wait "$audio_pid" 2>/dev/null
+        fi
+        return 1
+    }
+    trap cleanup_ascii INT
+    
+    # Get stream URL
+    (
+        yt-dlp \
+            --cookies-from-browser=firefox \
+            -f "worst[protocol=m3u8]/worst" \
+            --get-url \
+            "$page_url" 2>/dev/null | head -n 1
+    ) > /tmp/phub_stream.$$ &
+    
+    ytdlp_pid=$!
+    spinner "$ytdlp_pid"
+    
+    wait "$ytdlp_pid"
+    stream_url=$(cat /tmp/phub_stream.$$)
+    rm -f /tmp/phub_stream.$$
+    
+    # Check if stream URL was retrieved
+    if [ -z "$stream_url" ]; then
+        echo "" > /dev/tty
+        echo "  ❌ Failed to fetch stream." > /dev/tty
+        echo "  😞 Video might be unavailable or restricted." > /dev/tty
+        trap - INT
+        sleep 2
+        return 1
+    fi
+    
+    # Get terminal dimensions
+    term_width=$(tput cols)
+    term_height=$(tput lines)
+    
+    # Adjust for display (keep some padding)
+    display_width=$((term_width > 120 ? 120 : term_width - 2))
+    display_height=$((term_height - 4))
+    
+    clear
+    echo "" > /dev/tty
+    echo "  ▶ Playing in ASCII mode with audio... (Press Ctrl+C to stop)" > /dev/tty
+    echo "" > /dev/tty
+    sleep 1
+    
+    # Start audio in background (no video, only audio)
+    mpv \
+        --really-quiet \
+        --no-video \
+        --no-ytdl \
+        --profile=fast \
+        --hwdec=auto \
+        --cache=yes \
+        --cache-secs=10 \
+        "$stream_url" </dev/null &>/dev/null &
+    
+    audio_pid=$!
+    
+    # Small delay to let audio start
+    sleep 0.5
+    
+    # Stream video directly to ASCII (no download, no time limit)
+    # Using -re flag for real-time streaming to match audio sync
+    clear
+    ffmpeg -re -i "$stream_url" \
+        -vf "fps=15,scale=${display_width}:${display_height}:force_original_aspect_ratio=decrease" \
+        -f image2pipe -vcodec ppm - 2>/dev/null | \
+        chafa --format=symbols --symbols=vhalf --size="${display_width}x${display_height}" --animate=off --clear - 2>/dev/null
+    
+    # Cleanup audio process
+    if [ -n "$audio_pid" ] && kill -0 "$audio_pid" 2>/dev/null; then
+        kill "$audio_pid" 2>/dev/null
+        wait "$audio_pid" 2>/dev/null
+    fi
+    
+    # Remove trap
+    trap - INT
+    
+    end_time=$(date +%s)
+    duration=$((end_time - start_time))
+    
+    # Check if it was too short (likely failed)
+    [ "$duration" -lt 5 ] && return 1
+    
+    return 0
+}
+
 download_spinner() {
     local pid=$1
     local delay=0.1

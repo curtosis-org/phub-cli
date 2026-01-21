@@ -32,8 +32,9 @@ pre_play_menu() {
     echo " What do you want to do? 🎬" > /dev/tty
     echo " ---------------------------------" > /dev/tty
     echo "  [1] Watch video" > /dev/tty
-    echo "  [2] Download video" > /dev/tty
-    echo "  [3] Open in browser" > /dev/tty
+    echo "  [2] Watch video (ASCII mode)" > /dev/tty
+    echo "  [3] Download video" > /dev/tty
+    echo "  [4] Open in browser" > /dev/tty
     echo "  [b] Back to results" > /dev/tty
     echo " ---------------------------------" > /dev/tty
     echo "" > /dev/tty

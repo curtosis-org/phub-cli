@@ -35,6 +35,7 @@ phub-cli
 - Search videos by keyword
 - Paginated results for large categories and searches
 - Instant streaming via mpv
+- **ASCII video playback mode** - Watch videos as retro ASCII art with synchronized audio
 - Direct stream extraction using yt-dlp
 - Download videos in multiple qualities (1080p, 720p, 480p, 360p)
 - Open videos directly in your default browser
@@ -103,28 +104,46 @@ pip install -r requirements.txt
 
 - python3 requests
 
+### Optional (for ASCII playback mode)
+
+- ffmpeg
+
+- chafa
+
 ### Arch Linux
 
 ```bash
 sudo pacman -S mpv fzf yt-dlp python python-beautifulsoup4
+
+# Optional: for ASCII playback mode
+sudo pacman -S ffmpeg chafa
 ```
 
 ### Debian / Ubuntu
 
 ```bash
 sudo apt install mpv fzf yt-dlp python3 python3-bs4
+
+# Optional: for ASCII playback mode
+sudo apt install ffmpeg chafa
 ```
 
 ### Fedora
 
 ```bash
 sudo dnf install mpv fzf yt-dlp python3 python3-beautifulsoup4
+
+# Optional: for ASCII playback mode
+sudo dnf install ffmpeg chafa
 ```
 ### macOS (Homebrew)
 
 ```bash
 brew install mpv fzf yt-dlp python
 pip3 install beautifulsoup4
+
+# Optional: for ASCII playback mode
+brew install ffmpeg chafa
 ```
 
 ## Usage
@@ -141,6 +160,12 @@ You will be presented with:
 - Quit
 
 Navigation is entirely keyboard-driven using fzf.
+
+When you select a video, you can:
+- Watch it normally via mpv
+- Watch it in **ASCII mode** (retro terminal playback with audio)
+- Download it in various qualities
+- Open it in your browser
 
 ## Fixing errors
 If a video fails to play:
