@@ -6,7 +6,7 @@ get_version() {
         CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "unknown")
         
         # Get latest version from remote tags
-        LATEST_VERSION=$(git tag --sort=-v:refname | tail -n 1 2>/dev/null || echo "unknown")
+        LATEST_VERSION=$(git tag --sort=-v:refname | head -n 1 2>/dev/null || echo "unknown")
         
         echo "$CURRENT_VERSION"
     else
@@ -21,7 +21,7 @@ check_for_updates() {
         git fetch --tags >/dev/null 2>&1
         
         CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "unknown")
-        LATEST_VERSION=$(git tag --sort=-v:refname | tail -n 1 2>/dev/null || echo "unknown")
+        LATEST_VERSION=$(git tag --sort=-v:refname | head -n 1 2>/dev/null || echo "unknown")
         
         if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ] && [ "$CURRENT_VERSION" != "unknown" ] && [ "$LATEST_VERSION" != "unknown" ]; then
             echo "📦 Update available: $LATEST_VERSION (you have: $CURRENT_VERSION)"
@@ -40,7 +40,7 @@ check_for_updates() {
 
 show_home() {
     VERSION=$(get_version)
-cat << "EOF"
+cat << EOF
 
    ██████╗ ██╗  ██╗██╗   ██╗██████╗        ██████╗ ██╗     ██╗
    ██╔══██╗██║  ██║██║   ██║██╔══██╗      ██╔════╝ ██║     ██║
