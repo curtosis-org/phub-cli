@@ -8,11 +8,18 @@ from bs4 import BeautifulSoup
 if len(sys.argv) < 2:
     sys.exit(1)
 
-query = " ".join(sys.argv[1:])
+# Last arg is page number if it's a digit
+if len(sys.argv) > 2 and sys.argv[-1].isdigit():
+    page = int(sys.argv[-1])
+    query = " ".join(sys.argv[1:-1])
+else:
+    page = 1
+    query = " ".join(sys.argv[1:])
+
 keywords = [k.lower() for k in query.split()]
 
 url = "https://www.pornhub.com/video/search"
-params = {"search": query}
+params = {"search": query, "page": page}
 
 headers = {
     "User-Agent": "Mozilla/5.0"

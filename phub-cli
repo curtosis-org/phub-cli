@@ -2,7 +2,14 @@
 
 exec </dev/tty
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
+# Resolve script directory (handles symlinks)
+SCRIPT="$0"
+while [ -L "$SCRIPT" ]; do
+    SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT")" && pwd)"
+    SCRIPT="$(readlink "$SCRIPT")"
+    [[ "$SCRIPT" != /* ]] && SCRIPT="$SCRIPT_DIR/$SCRIPT"
+done
+DIR="$(cd -P "$(dirname "$SCRIPT")" && pwd)"
 
 source "$DIR/modules/categories.sh"
 source "$DIR/modules/player.sh"
@@ -34,11 +41,20 @@ while true; do
         [ -z "$category" ] && continue
 
         cid=$(echo "$category" | awk -F'|' '{print $1}')
+        page=1
 
         #res
         while true; do
-            video=$("$DIR/modules/videos.py" "$cid" | fzf \
-                --prompt="Video ❯ " \
+            # Build list with pagination
+            video_list=$("$DIR/modules/videos.py" "$cid" "$page")
+
+            # Add navigation options
+            nav_options=""
+            [ "$page" -gt 1 ] && nav_options="PREV|<<< Previous page\n"
+            nav_options="${nav_options}NEXT|>>> Next page"
+
+            video=$(printf "%s\n%b" "$video_list" "$nav_options" | fzf \
+                --prompt="Video (page $page) ❯ " \
                 --height=100% \
                 --border \
                 --layout=reverse \
@@ -52,33 +68,110 @@ while true; do
 
             viewkey=$(echo "$video" | awk -F'|' '{print $1}')
 
-            #post menu
+            # Handle pagination
+            if [ "$viewkey" = "NEXT" ]; then
+                ((page++))
+                continue
+            elif [ "$viewkey" = "PREV" ]; then
+                ((page--))
+                [ "$page" -lt 1 ] && page=1
+                continue
+            fi
+
+            #pre-play menu
             while true; do
-                if ! play_video "$viewkey"; then
-                    echo "❌ Video unavailable"
-                    sleep 1
-                    break
-                fi
-
-                
                 clear
-                action=$(post_play_menu)
+                pre_action=$(pre_play_menu)
 
-                case "$action" in
+                case "$pre_action" in
                     1)
-                       
-                        continue
+                        # Watch video
+                        while true; do
+                            if ! play_video "$viewkey"; then
+                                echo "❌ Video unavailable"
+                                sleep 1
+                                break
+                            fi
+
+                            clear
+                            action=$(post_play_menu)
+
+                            case "$action" in
+                                1)
+                                    continue
+                                    ;;
+                                2)
+                                    break
+                                    ;;
+                                3)
+                                    nav="home"
+                                    break
+                                    ;;
+                                q|Q)
+                                    clear
+                                    exit 0
+                                    ;;
+                                *)
+                                    continue
+                                    ;;
+                            esac
+                        done
+                        [ "$nav" = "home" ] && break
+                        break
                         ;;
                     2)
+                        # Download video
+                        while true; do
+                            clear
+                            quality=$(quality_menu)
+
+                            case "$quality" in
+                                1|2|3|4)
+                                    if download_video "$viewkey" "$quality"; then
+                                        clear
+                                        dl_action=$(post_download_menu)
+
+                                        case "$dl_action" in
+                                            1)
+                                                continue
+                                                ;;
+                                            2)
+                                                break
+                                                ;;
+                                            3)
+                                                nav="home"
+                                                break
+                                                ;;
+                                            q|Q)
+                                                clear
+                                                exit 0
+                                                ;;
+                                            *)
+                                                continue
+                                                ;;
+                                        esac
+                                    else
+                                        break
+                                    fi
+                                    ;;
+                                b|B)
+                                    break
+                                    ;;
+                                *)
+                                    continue
+                                    ;;
+                            esac
+                        done
+                        [ "$nav" = "home" ] && break
                         break
                         ;;
                     3)
-                        nav="home"
-                        break
+                        # Open in browser
+                        open_in_browser "$viewkey"
+                        continue
                         ;;
-                    q|Q)
-                        clear
-                        exit 0
+                    b|B)
+                        break
                         ;;
                     *)
                         continue
@@ -98,10 +191,19 @@ while true; do
     2)
         read -r -p "Search query: " query </dev/tty
         [ -z "$query" ] && continue
+        page=1
 
         while true; do
-            video=$("$DIR/modules/search.py" "$query" | fzf \
-                --prompt="Search ❯ " \
+            # Build list with pagination
+            video_list=$("$DIR/modules/search.py" "$query" "$page")
+
+            # Add navigation options
+            nav_options=""
+            [ "$page" -gt 1 ] && nav_options="PREV|<<< Previous page\n"
+            nav_options="${nav_options}NEXT|>>> Next page"
+
+            video=$(printf "%s\n%b" "$video_list" "$nav_options" | fzf \
+                --prompt="Search (page $page) ❯ " \
                 --height=100% \
                 --border \
                 --layout=reverse \
@@ -115,30 +217,110 @@ while true; do
 
             viewkey=$(echo "$video" | awk -F'|' '{print $1}')
 
+            # Handle pagination
+            if [ "$viewkey" = "NEXT" ]; then
+                ((page++))
+                continue
+            elif [ "$viewkey" = "PREV" ]; then
+                ((page--))
+                [ "$page" -lt 1 ] && page=1
+                continue
+            fi
+
+            #pre-play menu
             while true; do
-                if ! play_video "$viewkey"; then
-                    echo "❌ Video unavailable"
-                    sleep 1
-                    break
-                fi
-
                 clear
-                action=$(post_play_menu)
+                pre_action=$(pre_play_menu)
 
-                case "$action" in
+                case "$pre_action" in
                     1)
-                        continue
+                        # Watch video
+                        while true; do
+                            if ! play_video "$viewkey"; then
+                                echo "❌ Video unavailable"
+                                sleep 1
+                                break
+                            fi
+
+                            clear
+                            action=$(post_play_menu)
+
+                            case "$action" in
+                                1)
+                                    continue
+                                    ;;
+                                2)
+                                    break
+                                    ;;
+                                3)
+                                    nav="home"
+                                    break
+                                    ;;
+                                q|Q)
+                                    clear
+                                    exit 0
+                                    ;;
+                                *)
+                                    continue
+                                    ;;
+                            esac
+                        done
+                        [ "$nav" = "home" ] && break
+                        break
                         ;;
                     2)
+                        # Download video
+                        while true; do
+                            clear
+                            quality=$(quality_menu)
+
+                            case "$quality" in
+                                1|2|3|4)
+                                    if download_video "$viewkey" "$quality"; then
+                                        clear
+                                        dl_action=$(post_download_menu)
+
+                                        case "$dl_action" in
+                                            1)
+                                                continue
+                                                ;;
+                                            2)
+                                                break
+                                                ;;
+                                            3)
+                                                nav="home"
+                                                break
+                                                ;;
+                                            q|Q)
+                                                clear
+                                                exit 0
+                                                ;;
+                                            *)
+                                                continue
+                                                ;;
+                                        esac
+                                    else
+                                        break
+                                    fi
+                                    ;;
+                                b|B)
+                                    break
+                                    ;;
+                                *)
+                                    continue
+                                    ;;
+                            esac
+                        done
+                        [ "$nav" = "home" ] && break
                         break
                         ;;
                     3)
-                        nav="home"
-                        break
+                        # Open in browser
+                        open_in_browser "$viewkey"
+                        continue
                         ;;
-                    q|Q)
-                        clear
-                        exit 0
+                    b|B)
+                        break
                         ;;
                     *)
                         continue

@@ -5,11 +5,13 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-if len(sys.argv) != 2:
+if len(sys.argv) < 2:
     sys.exit(1)
 
 category_id = sys.argv[1]
-url = f"https://www.pornhub.com/video?c={category_id}"
+page = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+
+url = f"https://www.pornhub.com/video?c={category_id}&page={page}"
 
 headers = {
     "User-Agent": "Mozilla/5.0"
