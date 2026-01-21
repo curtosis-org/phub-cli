@@ -30,14 +30,20 @@ phub-cli
 ```
 
 ## Features
+
 - Browse categories using fzf
 - Search videos by keyword
-- Instant streaming (no downloads)
-- Direct m3u8 playback via yt-dlp + mpv
+- Paginated results for large categories and searches
+- Instant streaming via mpv
+- Direct stream extraction using yt-dlp
+- Download videos in multiple qualities (1080p, 720p, 480p, 360p)
+- Open videos directly in your default browser
 - ani-cli–style navigation flow
 - Graceful handling of broken or unavailable videos
-- Clean terminal UI
-- No browser, no tracking, no clutter
+- Clean terminal UI with interactive menus
+- No browser required for playback
+- No accounts, no tracking, no clutter
+
 
 ---
 
