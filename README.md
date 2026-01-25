@@ -95,13 +95,14 @@ pip install -r requirements.txt
 
 - yt-dlp
 
-- jq
+- jq : required for JSON parsing in stream and metadata handling
   
 - python3
 
 - python3-bs4 (BeautifulSoup)
 
 - python3 requests
+  
 
 ### Arch Linux
 
