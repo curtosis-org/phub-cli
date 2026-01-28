@@ -12,7 +12,7 @@ SHARE="$PREFIX/share/phub-cli"
 
 echo "▶ Installing phub-cli"
 
-# --- Dependency check ---
+#dependency checks
 deps=(bash mpv fzf yt-dlp python3)
 for d in "${deps[@]}"; do
   if ! command -v "$d" >/dev/null; then
@@ -21,7 +21,7 @@ for d in "${deps[@]}"; do
   fi
 done
 
-# --- Python dependency check (NON-FATAL MESSAGE) ---
+#dependency checks
 if ! python3 - <<EOF >/dev/null 2>&1
 import bs4
 EOF

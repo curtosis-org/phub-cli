@@ -47,14 +47,13 @@ phub-cli
 
 ---
 
-
-
 ## Table of Contents
 
 
 - [Installation](#installation)
 - [Dependencies](#dependencies)
 - [Usage](#usage)
+- [Tips](#tips)
 - [Fixing errors](#fixing-errors)
 - [Technical Notes](#technical-notes)
 - [Disclaimer](#disclaimer)
@@ -81,28 +80,20 @@ phub-cli
 phub-cli relies on external tools and system Python packages.
 You must install these before running the installer.
 
-```bash
-pip install -r requirements.txt
-```
-
 # Required
 
 - bash
-
 - mpv
-
 - fzf
-
 - yt-dlp
 
 - jq : required for JSON parsing in stream and metadata handling
   
+- curl
+- jq
 - python3
-
 - python3-bs4 (BeautifulSoup)
-
-- python3 requests
-  
+- python3-requests (requests)
 
 ### Arch Linux
 
@@ -121,6 +112,7 @@ sudo apt install mpv fzf yt-dlp python3 python3-bs4
 ```bash
 sudo dnf install mpv fzf yt-dlp python3 python3-beautifulsoup4
 ```
+
 ### macOS (Homebrew)
 
 ```bash
@@ -142,6 +134,18 @@ You will be presented with:
 - Quit
 
 Navigation is entirely keyboard-driven using fzf.
+
+## Tips
+
+Optional toggles:
+
+```bash
+# Enable blinking title on the home screen
+PHUBCLI_BLINK=1 phub-cli
+
+# Disable the custom fzf theme
+PHUBCLI_FZF_THEME=0 phub-cli
+```
 
 ## Fixing errors
 If a video fails to play:

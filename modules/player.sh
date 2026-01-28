@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#importing colors
+DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$DIR/modules/ui.sh"
+
 #spinner 
 spinner() {
     local pid=$1
@@ -8,7 +12,7 @@ spinner() {
 
     while kill -0 "$pid" 2>/dev/null; do
         for i in $(seq 0 3); do
-            printf "\r   %s Fetching stream... " "${spinstr:$i:1}" > /dev/tty
+            printf "\r   ${HOT_PINK}%s${NC} Fetching stream... " "${spinstr:$i:1}" > /dev/tty
             sleep "$delay"
         done
     done
@@ -43,11 +47,11 @@ play_video() {
     pick3=${messages[RANDOM % ${#messages[@]}]}
 
     echo "" > /dev/tty
-    echo "  $pick1" > /dev/tty
+    echo -e "  ${HOT_PINK}$pick1${NC}" > /dev/tty
     sleep 0.3
-    echo "  $pick2" > /dev/tty
+    echo -e "  ${PINK}$pick2${NC}" > /dev/tty
     sleep 0.3
-    echo "  $pick3" > /dev/tty
+    echo -e "  ${ROSE}$pick3${NC}" > /dev/tty
     echo "" > /dev/tty
 
 
@@ -72,15 +76,15 @@ play_video() {
     #if failed
     if [ -z "$stream_url" ]; then
         echo "" > /dev/tty
-        echo "  ❌ Failed to fetch stream." > /dev/tty
-        echo "  😞 Video might be unavailable or restricted." > /dev/tty
+        echo -e "  ${RED}❌ Failed to fetch stream.${NC}" > /dev/tty
+        echo -e "  ${ROSE}😞 Video might be unavailable or restricted.${NC}" > /dev/tty
         sleep 2
         return 1
     fi
 
     #final
     echo "" > /dev/tty
-    echo "  ▶ Launching player..." > /dev/tty
+    echo -e "  ${GOLD}▶ Launching player...${NC}" > /dev/tty
     sleep 0.6
 
     #play
@@ -109,7 +113,7 @@ download_spinner() {
 
     while kill -0 "$pid" 2>/dev/null; do
         for i in $(seq 0 3); do
-            printf "\r   %s Downloading... " "${spinstr:$i:1}" > /dev/tty
+            printf "\r   ${GOLD}%s${NC} Downloading... " "${spinstr:$i:1}" > /dev/tty
             sleep "$delay"
         done
     done
@@ -163,12 +167,12 @@ download_video() {
     pick2=${messages[RANDOM % ${#messages[@]}]}
 
     echo "" > /dev/tty
-    echo "  $pick1" > /dev/tty
+    echo -e "  ${HOT_PINK}$pick1${NC}" > /dev/tty
     sleep 0.3
-    echo "  $pick2" > /dev/tty
+    echo -e "  ${PINK}$pick2${NC}" > /dev/tty
     echo "" > /dev/tty
-    echo "  📺 Quality: $quality_name" > /dev/tty
-    echo "  📁 Destination: $download_dir" > /dev/tty
+    echo -e "  ${GOLD}📺 Quality: $quality_name${NC}" > /dev/tty
+    echo -e "  ${DEEP_PINK}📁 Destination: $download_dir${NC}" > /dev/tty
     echo "" > /dev/tty
 
     # Download with yt-dlp
@@ -184,14 +188,14 @@ download_video() {
 
     if [ "$download_status" -eq 0 ]; then
         echo "" > /dev/tty
-        echo "  ✅ Download complete!" > /dev/tty
-        echo "  📁 Saved to: $download_dir" > /dev/tty
+        echo -e "  ${GOLD}✅ Download complete!${NC}" > /dev/tty
+        echo -e "  ${DEEP_PINK}📁 Saved to: $download_dir${NC}" > /dev/tty
         sleep 1
         return 0
     else
         echo "" > /dev/tty
-        echo "  ❌ Download failed." > /dev/tty
-        echo "  😞 Video might be unavailable or restricted." > /dev/tty
+        echo -e "  ${RED}❌ Download failed.${NC}" > /dev/tty
+        echo -e "  ${ROSE}😞 Video might be unavailable or restricted.${NC}" > /dev/tty
         sleep 2
         return 1
     fi
@@ -204,14 +208,14 @@ open_in_browser() {
     page_url="https://www.pornhub.com/view_video.php?viewkey=$viewkey"
 
     echo "" > /dev/tty
-    echo "  🌐 Opening in browser..." > /dev/tty
+    echo -e "  ${HOT_PINK}🌐 Opening in browser...${NC}" > /dev/tty
 
     if command -v xdg-open >/dev/null; then
         xdg-open "$page_url" 2>/dev/null &
     elif command -v open >/dev/null; then
         open "$page_url" 2>/dev/null &
     else
-        echo "  ❌ No browser opener found" > /dev/tty
+        echo -e "  ${RED}❌ No browser opener found${NC}" > /dev/tty
         sleep 2
         return 1
     fi

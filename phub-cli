@@ -19,6 +19,17 @@ command -v fzf >/dev/null || { echo "fzf not installed"; exit 1; }
 command -v mpv >/dev/null || { echo "mpv not installed"; exit 1; }
 command -v yt-dlp >/dev/null || { echo "yt-dlp not installed"; exit 1; }
 
+PHUBCLI_FZF_THEME=${PHUBCLI_FZF_THEME:-1}
+PHUBCLI_FZF_OPTS=()
+if [ "${PHUBCLI_FZF_THEME}" = "1" ]; then
+    PHUBCLI_FZF_OPTS=(
+        --pointer='❯'
+        --marker='❤'
+        --prompt='❯ '
+        --color='fg:#c0c0c0,bg:-1,hl:#ff005f,fg+:#ffffff,bg+:-1,hl+:#ff5fd7,info:#ffaf00,prompt:#ff5fd7,pointer:#ff005f,marker:#ff5fd7,spinner:#ffaf00,header:#ff5fd7,border:#ff005f'
+    )
+fi
+
 while true; do
     clear
     show_home
@@ -29,7 +40,7 @@ while true; do
 
     #categ
     1)
-        category=$(get_categories | fzf \
+        category=$(get_categories | fzf "${PHUBCLI_FZF_OPTS[@]}" \
             --prompt="Category ❯ " \
             --height=100% \
             --border \
@@ -53,7 +64,7 @@ while true; do
             [ "$page" -gt 1 ] && nav_options="PREV|<<< Previous page\n"
             nav_options="${nav_options}NEXT|>>> Next page"
 
-            video=$(printf "%s\n%b" "$video_list" "$nav_options" | fzf \
+            video=$(printf "%s\n%b" "$video_list" "$nav_options" | fzf "${PHUBCLI_FZF_OPTS[@]}" \
                 --prompt="Video (page $page) ❯ " \
                 --height=100% \
                 --border \
@@ -202,7 +213,7 @@ while true; do
             [ "$page" -gt 1 ] && nav_options="PREV|<<< Previous page\n"
             nav_options="${nav_options}NEXT|>>> Next page"
 
-            video=$(printf "%s\n%b" "$video_list" "$nav_options" | fzf \
+            video=$(printf "%s\n%b" "$video_list" "$nav_options" | fzf "${PHUBCLI_FZF_OPTS[@]}" \
                 --prompt="Search (page $page) ❯ " \
                 --height=100% \
                 --border \
