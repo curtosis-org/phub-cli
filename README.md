@@ -90,7 +90,7 @@ You must install these before running the installer.
 - jq : required for JSON parsing in stream and metadata handling
   
 - curl
-- jq
+
 - python3
 - python3-bs4 (BeautifulSoup)
 - python3-requests (requests)
