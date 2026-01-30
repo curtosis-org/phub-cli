@@ -60,6 +60,18 @@ phub-cli
 
 ## Installation
 
+**For Termux Setup:**
+- Install mpv-android and termux:API app from f-droid.
+- mpv-android: https://f-droid.org/en/packages/is.xyz.mpv/
+- termux:API (Optional) : https://f-droid.org/en/packages/com.termux.api/
+
+```bash
+git clone https://github.com/thornynepali/phub-cli.git
+cd phub-cli
+chmod +x install_termux.sh
+./install_termux.sh
+```
+
 From source (recommended)
 
 ```bash
