@@ -22,10 +22,9 @@ for d in "${deps[@]}"; do
 done
 
 #dependency checks
-if ! python3 - <<EOF >/dev/null 2>&1
+if ! python3 - <<EOF >/dev/null 2>&1; then
 import bs4
 EOF
-then
   echo "❌ Missing python dependency: beautifulsoup4"
   echo "   Arch: sudo pacman -S python-beautifulsoup4"
   echo "   Debian/Ubuntu: sudo apt install python3-bs4"
@@ -45,7 +44,14 @@ echo "▶ Installing binary"
 cp phub-cli "$BIN/phub-cli"
 
 echo "▶ Patching module path"
-sed -i "s|^DIR=.*|DIR=\"$SHARE\"|" "$BIN/phub-cli"
+#sed -i "s|^DIR=.*|DIR=\"$SHARE\"|" "$BIN/phub-cli"
+if sed --version >/dev/null 2>&1; then
+  # GNU sed
+  sed -i "s|^DIR=.*|DIR=\"$SHARE\"|" "$BIN/phub-cli"
+else
+  # BSD sed (macOS)
+  sed -i '' "s|^DIR=.*|DIR=\"$SHARE\"|" "$BIN/phub-cli"
+fi
 
 echo "▶ Setting permissions"
 chmod +x "$BIN/phub-cli"
