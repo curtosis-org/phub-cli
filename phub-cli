@@ -14,6 +14,7 @@ DIR="$(cd -P "$(dirname "$SCRIPT")" && pwd)"
 source "$DIR/modules/categories.sh"
 source "$DIR/modules/player.sh"
 source "$DIR/modules/ui.sh"
+source "$DIR/modules/updater.sh"
 
 command -v fzf >/dev/null || { echo "fzf not installed"; exit 1; }
 command -v mpv >/dev/null || { echo "mpv not installed"; exit 1; }
@@ -30,7 +31,17 @@ if [ "${PHUBCLI_FZF_THEME}" = "1" ]; then
     )
 fi
 
+# Check for updates in background
+check_for_update &
+UPDATE_CHECK_PID=$!
+
 while true; do
+    # Collect update check result if still running
+    if [ -n "$UPDATE_CHECK_PID" ]; then
+        wait "$UPDATE_CHECK_PID" 2>/dev/null
+        UPDATE_CHECK_PID=""
+    fi
+
     clear
     show_home
 
@@ -344,6 +355,12 @@ while true; do
                 break
             fi
         done
+        ;;
+
+    #Update
+    u|U)
+        clear
+        do_update
         ;;
 
     #Quit

@@ -58,6 +58,14 @@ chmod +x "$BIN/phub-cli"
 chmod +x "$SHARE/modules/"*.sh
 chmod +x "$SHARE/modules/"*.py
 
+# Save version hash for update checks
+echo "▶ Saving version info"
+if command -v git >/dev/null && [ -d ".git" ]; then
+    git rev-parse HEAD > "$SHARE/.version"
+else
+    echo "unknown" > "$SHARE/.version"
+fi
+
 echo
 echo "✅ phub-cli installed successfully"
 echo "▶ Run it with: phub-cli"

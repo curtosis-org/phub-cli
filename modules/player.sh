@@ -54,48 +54,21 @@ play_video() {
     echo -e "  ${ROSE}$pick3${NC}" > /dev/tty
     echo "" > /dev/tty
 
-
-    #bg
-    (
-        yt-dlp \
-            --cookies-from-browser=firefox \
-            -f "best[protocol=m3u8]/best" \
-            --get-url \
-            "$page_url" 2>/dev/null | head -n 1
-    ) > /tmp/phub_stream.$$ &
-
-    ytdlp_pid=$!
-
-    #anim
-    spinner "$ytdlp_pid"
-
-    wait "$ytdlp_pid"
-    stream_url=$(cat /tmp/phub_stream.$$)
-    rm -f /tmp/phub_stream.$$
-
-    #if failed
-    if [ -z "$stream_url" ]; then
-        echo "" > /dev/tty
-        echo -e "  ${RED}❌ Failed to fetch stream.${NC}" > /dev/tty
-        echo -e "  ${ROSE}😞 Video might be unavailable or restricted.${NC}" > /dev/tty
-        sleep 2
-        return 1
-    fi
-
     #final
     echo "" > /dev/tty
     echo -e "  ${GOLD}▶ Launching player...${NC}" > /dev/tty
     sleep 0.6
 
-    #play
+    #play — let mpv use yt-dlp directly (avoids token expiration)
     mpv \
         --really-quiet \
-        --no-ytdl \
         --profile=fast \
         --hwdec=auto \
         --cache=yes \
         --cache-secs=10 \
-        "$stream_url"
+        --ytdl-format="bestvideo[height<=1080]+bestaudio/best" \
+        --ytdl-raw-options="cookies-from-browser=firefox" \
+        "$page_url"
 
     end_time=$(date +%s)
     duration=$((end_time - start_time))

@@ -114,12 +114,18 @@ show_home() {
     printf '%b\n' "${indent_text}${DEEP_PINK}    ${UNDERLINE}terminal video browser${NC}"
     printf '%b\n' "${indent_text}${PINK}  lust-driven streaming experience${NC}"
     printf '\n'
-    printf '%b\n' "${indent_text}${GOLD}                v0.3.0${NC}"
+    printf '%b\n' "${indent_text}${GOLD}                v0.4.0${NC}"
     printf '\n'
+
+    if [ "${PHUBCLI_UPDATE_AVAILABLE}" = "1" ]; then
+        printf '%b\n' "${indent_text}${BOLD}${GOLD}      🔔 Update available!${NC}"
+        printf '\n'
+    fi
 
     _ui_box_top "$inner_w"
     _ui_menu_line "$inner_w" "[1]" "Browse categories"
     _ui_menu_line "$inner_w" "[2]" "Search videos"
+    _ui_menu_line "$inner_w" "[u]" "Update phub-cli"
     _ui_menu_line "$inner_w" "[q]" "Quit"
     _ui_box_bottom "$inner_w"
     printf '\n'

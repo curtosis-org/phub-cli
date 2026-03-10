@@ -40,6 +40,7 @@ phub-cli
 - Open videos directly in your default browser
 - ani-cli–style navigation flow
 - Graceful handling of broken or unavailable videos
+- Built-in auto-updater to silently check for and install new releases
 - Clean terminal UI with interactive menus
 - No browser required for playback
 - No accounts, no tracking, no clutter
