@@ -51,7 +51,12 @@ while true; do
 
     #categ
     1)
-        category=$(get_categories | fzf "${PHUBCLI_FZF_OPTS[@]}" \
+        if ! categories=$(get_categories); then
+            read -r -p "Press Enter to return to menu..." _ </dev/tty
+            continue
+        fi
+
+        category=$(printf '%s\n' "$categories" | fzf "${PHUBCLI_FZF_OPTS[@]}" \
             --prompt="Category ❯ " \
             --height=100% \
             --border \
