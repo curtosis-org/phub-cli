@@ -4,6 +4,7 @@ import sys
 import re
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 if len(sys.argv) < 2:
     sys.exit(1)
@@ -22,7 +23,11 @@ soup = BeautifulSoup(html, "html.parser")
 
 seen = set()
 
-for a in soup.find_all("a", href=re.compile(r"view_video\.php\?viewkey=")):
+for block in soup.find_all("li", class_=re.compile(r"videoblock")):
+    a = block.find("a", href=re.compile(r"viewkey="))
+    if not a:
+        continue
+
     href = a.get("href", "")
     title = a.get("title", "").strip()
 
@@ -39,4 +44,10 @@ for a in soup.find_all("a", href=re.compile(r"view_video\.php\?viewkey=")):
         continue
 
     seen.add(viewkey)
-    print(f"{viewkey}|{title}")
+
+    img = block.find("img")
+    thumbnail = ""
+    if img:
+        thumbnail = img.get("src") or img.get("data-src") or ""
+
+    print(f"{viewkey}|{title}|{thumbnail}")

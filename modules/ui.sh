@@ -18,6 +18,79 @@ NC='\033[0m'
 
 PHUBCLI_BLINK=${PHUBCLI_BLINK:-0}
 
+_ui_fetch_thumbnail() {
+    local url="$1"
+    local tmp dir
+    
+    if [[ -z "$url" ]]; then
+        return 1
+    fi
+    
+    tmp=$(mktemp "/tmp/phub-thumb-XXXXXX.jpg") 2>/dev/null || tmp="/tmp/phub-thumb-$$"
+    
+    if curl -sL --max-time 10 -o "$tmp" "$url" 2>/dev/null; then
+        if [[ -s "$tmp" ]]; then
+            printf '%s' "$tmp"
+            return 0
+        fi
+    fi
+    
+    rm -f "$tmp" 2>/dev/null
+    return 1
+}
+
+_ui_preview_image() {
+    local thumb_url="$1"
+    local tmp
+    
+    if [[ -z "$thumb_url" ]]; then
+        printf '%b\n' "${PINK}[No thumbnail available]${NC}"
+        return 0
+    fi
+    
+    tmp=$(_ui_fetch_thumbnail "$thumb_url")
+    if [[ -z "$tmp" || ! -s "$tmp" ]]; then
+        printf '%b\n' "${GOLD}Thumbnail:${NC} ${thumb_url}"
+        rm -f "$tmp" 2>/dev/null
+        return 0
+    fi
+    
+    local rendered=0
+    
+    if command -v chafa >/dev/null 2>&1; then
+        if chafa -s 40x15 "$tmp" 2>/dev/null; then
+            rendered=1
+        fi
+    fi
+    
+    if [[ $rendered -eq 0 ]] && command -v timg >/dev/null 2>&1; then
+        if timg -g 60x25 "$tmp" 2>/dev/null; then
+            rendered=1
+        fi
+    fi
+    
+    if [[ $rendered -eq 0 ]] && command -v img2txt >/dev/null 2>&1; then
+        if img2txt -w 60 "$tmp" 2>/dev/null; then
+            rendered=1
+        fi
+    fi
+    
+    if [[ $rendered -eq 0 ]]; then
+        printf '%b\n' "${GOLD}Thumbnail:${NC} ${thumb_url}"
+    fi
+    
+    rm -f "$tmp" 2>/dev/null
+    return 0
+}
+
+_ui_fzf_preview() {
+    local line="$1"
+    local thumb_url
+    
+    thumb_url=$(printf '%s' "$line" | cut -d'|' -f3)
+    _ui_preview_image "$thumb_url"
+}
+
 _ui_cols() {
     local cols
     cols=$(tput cols 2>/dev/null)
@@ -114,7 +187,7 @@ show_home() {
     printf '%b\n' "${indent_text}${DEEP_PINK}    ${UNDERLINE}terminal video browser${NC}"
     printf '%b\n' "${indent_text}${PINK}  lust-driven streaming experience${NC}"
     printf '\n'
-    printf '%b\n' "${indent_text}${GOLD}                v0.4.0${NC}"
+    printf '%b\n' "${indent_text}${GOLD}                v0.4.5${NC}"
     printf '\n'
 
     if [ "${PHUBCLI_UPDATE_AVAILABLE}" = "1" ]; then

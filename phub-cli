@@ -88,8 +88,8 @@ while true; do
                 --cycle \
                 --delimiter="|" \
                 --with-nth=2 \
-                --preview='echo {} | cut -d"|" -f2' \
-                --preview-window=down:4:wrap)
+                --preview="sh -c \"source $DIR/modules/ui.sh; _ui_fzf_preview {}\"" \
+                --preview-window=down:15:wrap)
 
             [ -z "$video" ] && break
 
@@ -237,8 +237,8 @@ while true; do
                 --cycle \
                 --delimiter="|" \
                 --with-nth=2 \
-                --preview='echo {} | cut -d"|" -f2' \
-                --preview-window=down:4:wrap)
+                --preview="sh -c \"source $DIR/modules/ui.sh; _ui_fzf_preview {}\"" \
+                --preview-window=down:15:wrap)
 
             [ -z "$video" ] && break
 
