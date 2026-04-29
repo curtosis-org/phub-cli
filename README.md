@@ -204,3 +204,8 @@ Use responsibly and in accordance with your local laws.
 
 **Inspired by ani-cli. Built for terminals. Powered by curiosity and lust.**
 
+
+
+## **Star History**
+[![Star History Chart](https://app.repohistory.com/api/svg?repo=curtosis-org/phub-cli&type=Date&background=0D1117&color=f862d3)](https://app.repohistory.com/star-history)
+
