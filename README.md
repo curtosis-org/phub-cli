@@ -197,7 +197,7 @@ Use responsibly and in accordance with your local laws.
 
 
 
-
+[![Star History Chart](https://app.repohistory.com/api/svg?repo=curtosis-org/phub-cli&type=Date&background=0D1117&color=f86262)](https://app.repohistory.com/star-history)
 
 
 
