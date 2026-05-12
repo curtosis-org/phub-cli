@@ -14,7 +14,7 @@ phub-cli
 
 <h3 align="center">
 A terminal-based video browser inspired by ani-cli.<br>
-Browse, search, and stream directly from <a href="https://www.pornhub.com/">pornhub.com</a> — no browser required.
+Browse, search, and stream directly from <a href="https://www.pornhub.com/">pornhub.com</a> — no browser required. Only for Saharsh Gobinath. Nobody else can use this.
 </h3>
 
 <p align="center">
