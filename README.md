@@ -77,48 +77,43 @@ phub-cli
 ```
 
 ## Dependencies
-
 phub-cli relies on external tools and system Python packages.
 You must install these before running the installer.
 
 # Required
-
 - bash
 - mpv
 - fzf
 - yt-dlp
-
 - jq : required for JSON parsing in stream and metadata handling
-  
 - curl
-
 - python3
 - python3-bs4 (BeautifulSoup)
 - python3-requests (requests)
+- python3-curl-cffi : required for yt-dlp browser impersonation (fixes 403 errors)
 
 ### Arch Linux
-
 ```bash
 sudo pacman -S mpv fzf yt-dlp python python-beautifulsoup4
+pip install curl_cffi --break-system-packages
 ```
 
 ### Debian / Ubuntu
-
 ```bash
 sudo apt install mpv fzf yt-dlp python3 python3-bs4
+pip install curl_cffi --break-system-packages
 ```
 
 ### Fedora
-
 ```bash
 sudo dnf install mpv fzf yt-dlp python3 python3-beautifulsoup4
+pip install curl_cffi --break-system-packages
 ```
 
 ### macOS (Homebrew)
-
 ```bash
 brew install mpv fzf yt-dlp python
-pip3 install beautifulsoup4
+pip3 install beautifulsoup4 curl_cffi
 ```
 
 ## Usage
@@ -164,6 +159,7 @@ allow retry or navigation without crashing
 Ensure your dependencies are up to date:
 ```bash
 yt-dlp -U
+pip install -U curl_cffi --break-system-packages
 ```
 
 ## Technical Notes
