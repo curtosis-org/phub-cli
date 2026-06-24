@@ -31,6 +31,15 @@ EOF
   exit 1
 fi
 
+#dependency check : curl_cffi
+if ! python3 - <<EOF >/dev/null 2>&1; then
+import curl_cffi
+EOF
+  echo "❌ Missing python dependency: curl_cffi"
+  echo "   Install: pip install curl_cffi --break-system-packages"
+  exit 1
+fi
+
 # --- Install files ---
 echo "▶ Creating directories"
 mkdir -p "$BIN"
